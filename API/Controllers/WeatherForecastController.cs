@@ -1,6 +1,7 @@
 using Domain;
 using Microsoft.AspNetCore.Mvc;
-using Persistence; // Add this for DataContext
+using Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
@@ -14,9 +15,9 @@ public class WeatherForecastController : ControllerBase
     };
 
     private readonly ILogger<WeatherForecastController> _logger;
-    private readonly DataContext _context; // Add DataContext field
+    private readonly DataContext _context;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger, DataContext context) // Inject DataContext
+    public WeatherForecastController(ILogger<WeatherForecastController> logger, DataContext context)
     {
         _logger = logger;
         _context = context;
@@ -27,7 +28,7 @@ public class WeatherForecastController : ControllerBase
     {
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
-            Date = DateTime.Now.AddDays(index),
+            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
             TemperatureC = Random.Shared.Next(-20, 55),
             Summary = Summaries[Random.Shared.Next(Summaries.Length)]
         })
@@ -43,7 +44,7 @@ public class WeatherForecastController : ControllerBase
 
         var forecast = new WeatherForecast()
         {
-            Date = DateTime.Now,
+            Date = DateOnly.FromDateTime(DateTime.Now),
             TemperatureC = 75,
             Summary = "Warm"
         };
@@ -59,3 +60,4 @@ public class WeatherForecastController : ControllerBase
         throw new Exception("Error creating WeatherForecast");
     }
 }
+

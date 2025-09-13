@@ -1,5 +1,6 @@
 using Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion; // Add this
 
 namespace Persistence
 {
@@ -20,13 +21,15 @@ namespace Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Value converter for DateOnly
+            // Explicitly use a ValueConverter for DateOnly <-> string
+            var dateOnlyConverter = new ValueConverter<DateOnly, string>(
+                v => v.ToString("yyyy-MM-dd"),
+                v => DateOnly.Parse(v)
+            );
+
             modelBuilder.Entity<WeatherForecast>()
                 .Property(e => e.Date)
-                .HasConversion(
-                    v => v.ToString("yyyy-MM-dd"),
-                    v => DateOnly.Parse(v)
-                );
+                .HasConversion(dateOnlyConverter);
         }
     }
 }
