@@ -17,5 +17,16 @@ namespace Persistence
         {
             options.UseSqlite($"Data Source={DbPath}");
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Value converter for DateOnly
+            modelBuilder.Entity<WeatherForecast>()
+                .Property(e => e.Date)
+                .HasConversion(
+                    v => v.ToString("yyyy-MM-dd"),
+                    v => DateOnly.Parse(v)
+                );
+        }
     }
 }
